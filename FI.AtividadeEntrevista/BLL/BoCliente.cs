@@ -1,8 +1,9 @@
-﻿using System;
+﻿using FI.AtividadeEntrevista.BLL.Enums;
+using FI.AtividadeEntrevista.BLL.Resultados;
+using FI.AtividadeEntrevista.BLL.Util;
+using FI.AtividadeEntrevista.DML;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FI.AtividadeEntrevista.BLL
 {
@@ -12,21 +13,50 @@ namespace FI.AtividadeEntrevista.BLL
         /// Inclui um novo cliente
         /// </summary>
         /// <param name="cliente">Objeto de cliente</param>
-        public long Incluir(DML.Cliente cliente)
+        public ResultadoCliente Incluir(Cliente cliente)
         {
-            DAL.DaoCliente cli = new DAL.DaoCliente();
-            return cli.Incluir(cliente);
+            if (!ValidadorCpf.CpfValido(cliente.CPF))
+                return new ResultadoCliente(TipoResultado.CpfInvalido, "Erro ao salvar, forneça um CPF válido.", false);
+            else if (VerificarDuplicidadeCpf(cliente.CPF, cliente.Id))
+                return new ResultadoCliente(TipoResultado.CpfDuplicado, "Erro ao salvar, este CPF está vinculado a outro cliente.", false);
+
+            try
+            {
+                DAL.DaoCliente cli = new DAL.DaoCliente();
+                return cli.Incluir(cliente) != 0
+                ? new ResultadoCliente(TipoResultado.Sucesso, "Cadastro efetuado com sucesso.", true)
+                : new ResultadoCliente(TipoResultado.ErroGenerico, "Falha ao incluir cliente.", false);
+            }
+            catch (Exception e)
+            {
+                return new ResultadoCliente(TipoResultado.Excecao, e.Message, false);
+            }
         }
 
         /// <summary>
         /// Altera um cliente
         /// </summary>
         /// <param name="cliente">Objeto de cliente</param>
-        public void Alterar(DML.Cliente cliente)
+        public ResultadoCliente Alterar(Cliente cliente)
         {
-            DAL.DaoCliente cli = new DAL.DaoCliente();
-            cli.Alterar(cliente);
+            if (!ValidadorCpf.CpfValido(cliente.CPF))
+                return new ResultadoCliente(TipoResultado.CpfInvalido, "Erro ao salvar, forneça um CPF válido.", false);
+            else if (VerificarDuplicidadeCpf(cliente.CPF, cliente.Id))
+                return new ResultadoCliente(TipoResultado.CpfDuplicado, "Erro ao salvar, este CPF está vinculado a outro cliente.", false);
+
+            try
+            {
+                DAL.DaoCliente cli = new DAL.DaoCliente();
+                cli.Alterar(cliente);
+                return new ResultadoCliente(TipoResultado.Sucesso, "Cadastro alterado com sucesso.", true);
+            }
+            catch (Exception e)
+            {
+                return new ResultadoCliente(TipoResultado.Excecao, e.Message, false);
+            }
         }
+
+
 
         /// <summary>
         /// Consulta o cliente pelo id
@@ -65,7 +95,7 @@ namespace FI.AtividadeEntrevista.BLL
         public List<DML.Cliente> Pesquisa(int iniciarEm, int quantidade, string campoOrdenacao, bool crescente, out int qtd)
         {
             DAL.DaoCliente cli = new DAL.DaoCliente();
-            return cli.Pesquisa(iniciarEm,  quantidade, campoOrdenacao, crescente, out qtd);
+            return cli.Pesquisa(iniciarEm, quantidade, campoOrdenacao, crescente, out qtd);
         }
 
         /// <summary>
@@ -73,10 +103,10 @@ namespace FI.AtividadeEntrevista.BLL
         /// </summary>
         /// <param name="CPF"></param>
         /// <returns></returns>
-        public bool VerificarExistencia(string CPF)
+        public bool VerificarDuplicidadeCpf(string CPF, long id)
         {
             DAL.DaoCliente cli = new DAL.DaoCliente();
-            return cli.VerificarExistencia(CPF);
+            return cli.VerificarDuplicidadeCpf(CPF, id);
         }
     }
 }

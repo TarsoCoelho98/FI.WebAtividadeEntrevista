@@ -1,0 +1,12 @@
+﻿CREATE PROC FI_SP_VerificaCliente
+    @IdCliente BIGINT,
+    @CPF VARCHAR(11)
+AS
+BEGIN
+    SET NOCOUNT ON
+
+    SELECT 1
+    FROM CLIENTES
+    WHERE CPF = @CPF
+      AND (@IDCLIENTE = 0 OR ID <> @IdCliente)
+END

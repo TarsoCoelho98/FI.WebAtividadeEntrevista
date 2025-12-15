@@ -1,26 +1,28 @@
 ﻿CREATE PROC FI_SP_AltCliente
-    @NOME          VARCHAR (50) ,
-    @SOBRENOME     VARCHAR (255),
-    @NACIONALIDADE VARCHAR (50) ,
-    @CEP           VARCHAR (9)  ,
-    @ESTADO        VARCHAR (2)  ,
-    @CIDADE        VARCHAR (50) ,
-    @LOGRADOURO    VARCHAR (500),
-    @EMAIL         VARCHAR (2079),
-    @TELEFONE      VARCHAR (15),
-	@Id           BIGINT
+    @NOME          VARCHAR(50),
+    @SOBRENOME     VARCHAR(255),
+    @NACIONALIDADE VARCHAR(50),
+    @CEP           VARCHAR(9),
+    @ESTADO        VARCHAR(2),
+    @CIDADE        VARCHAR(50),
+    @LOGRADOURO    VARCHAR(500),
+    @EMAIL         VARCHAR(2079),
+    @TELEFONE      VARCHAR(15),
+    @CPF           VARCHAR(11),
+    @ID            BIGINT
 AS
 BEGIN
-	UPDATE CLIENTES 
-	SET 
-		NOME = @NOME, 
-		SOBRENOME = @SOBRENOME, 
-		NACIONALIDADE = @NACIONALIDADE, 
-		CEP = @CEP, 
-		ESTADO = @ESTADO, 
-		CIDADE = @CIDADE, 
-		LOGRADOURO = @LOGRADOURO, 
-		EMAIL = @EMAIL, 
-		TELEFONE = @TELEFONE
-	WHERE Id = @Id
+    UPDATE CLIENTES
+    SET 
+        NOME = @NOME,
+        SOBRENOME = @SOBRENOME,
+        NACIONALIDADE = @NACIONALIDADE,
+        CEP = @CEP,
+        ESTADO = @ESTADO,
+        CIDADE = @CIDADE,
+        LOGRADOURO = @LOGRADOURO,
+        EMAIL = @EMAIL,
+        TELEFONE = @TELEFONE,
+        CPF = @CPF
+    WHERE ID = @ID
 END
