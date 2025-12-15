@@ -1,4 +1,7 @@
-﻿
+﻿@{ 
+    var modoBotao = ViewBag.ModoEdicao ? "none" : "block";
+}
+
 <form id="formCadastro" method="post">
     <div class="row">
         <div class="col-md-6">
@@ -29,7 +32,7 @@
         </div>
 
     </div>
-    <div class="row">       
+    <div class="row">
         <div class="col-md-4">
             <div class="form-group">
                 <label for="CEP">CEP:</label>
@@ -87,5 +90,12 @@
         </div>
     </div>
 
-
+    <div id="modalBeneficiarios" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" id="modalBeneficiariosContent">
+                @Html.Partial("_BeneficiariosModal")
+            </div>
+        </div>
+    </div>
+    <button id="btnBeneficiarios" class="btn btn-primary" style="display:@modoBotao">Beneciários</button>
 </form>

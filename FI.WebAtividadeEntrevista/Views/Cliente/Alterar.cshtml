@@ -9,6 +9,7 @@
         var urlRetorno = '@Url.Action("Index", "Cliente", new { area = "" })';
     </script>
     @Scripts.Render("~/bundles/altClientes")
+@*talvez o melhor seja deixar os bundles tudo na layout*@
     @*@Scripts.Render("~/bundles/clientes") Gera problemas de 2 requisições*@
 }
 <h2>@Html.Raw(ViewBag.Title)</h2>

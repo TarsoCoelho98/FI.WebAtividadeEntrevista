@@ -1,80 +1,48 @@
 ﻿var beneficiarios = [];
 
-$(document).ready(function () {
-    //beneficiarios = [];
+$(document).on('click', '#btnIncluirBeneficiario', function () {
+    var cpf = $('#CpfBeneficiario').val();
+    var nome = $('#NomeBeneficiario').val();
+    var idCliente = 0; 
 
-    $('#btnBeneficiarios').on('click', function () {
-        $('#modalBeneficiarios').modal('show');
-    });
+    if (obj) {
+        idCliente = obj.Id;
+    }
 
-    $(document).on('click', '#btnIncluirBeneficiario', function () {
-        var cpf = $('#CpfBeneficiario').val();
-        var nome = $('#NomeBeneficiario').val();
-        var idCliente = 0;
+    var beneficiario = {
+        CPF: cpf,
+        Nome: nome,
+        IdCliente: idCliente
+    };
 
-        if (obj) {
-            idCliente = obj.Id;
-        }
+    beneficiarios.push(beneficiario);
+    $('#CpfBeneficiario').val('');
+    $('#NomeBeneficiario').val('');
+});
 
-        var beneficiario = {
-            CPF: cpf,
-            Nome: nome,
-            IdCliente: idCliente
-        };
+    //var dados = {
+    //    CPF: cpf,
+    //    Nome: nome,
+    //    IdCliente: idCliente
+    //};
+    //$.ajax({
+    //    url: '/Beneficiario/Incluir',
+    //    type: 'POST',
+    //    data: dados,
+    //    error:
+    //        function (r) {
+    //            if (r.status == 400)
+    //                ModalDialog("Ocorreu um erro", r.responseJSON);
+    //            else if (r.status == 500)
+    //                ModalDialog("Ocorreu um erro", "Ocorreu um erro interno no servidor.");
+    //        },
+    //    success:
+    //        function (r) {
+    //            ModalDialog("Sucesso!", r)
+    //            $("#formCadastro")[0].reset();
+    //        }
+    //});
 
-        beneficiarios.push(beneficiario);
-        $('#CpfBeneficiario').val('');
-        $('#NomeBeneficiario').val('');
-    });
-
-    $('#formCadastro').submit(function (e) {
-        e.preventDefault();
-        $.ajax({
-            url: urlPost,
-            method: "POST",
-            data: {
-                "NOME": $(this).find("#Nome").val(),
-                "CEP": $(this).find("#CEP").val(),
-                "CPF": $(this).find("#CPF").val(),
-                "Email": $(this).find("#Email").val(),
-                "Sobrenome": $(this).find("#Sobrenome").val(),
-                "Nacionalidade": $(this).find("#Nacionalidade").val(),
-                "Estado": $(this).find("#Estado").val(),
-                "Cidade": $(this).find("#Cidade").val(),
-                "Logradouro": $(this).find("#Logradouro").val(),
-                "Telefone": $(this).find("#Telefone").val()
-            },
-            error:
-                function (r) {
-                    if (r.status == 400)
-                        ModalDialog("Ocorreu um erro", r.responseJSON);
-                    else if (r.status == 500)
-                        ModalDialog("Ocorreu um erro", "Ocorreu um erro interno no servidor.");
-                },
-            success:
-                function (r) {
-                    ModalDialog("Sucesso!", r)
-                    $("#formCadastro")[0].reset();
-                }
-        });
-    })
-
-})
-
-function aplicarMascaraCpf(input) {
-    let valor = input.value.replace(/\D/g, '');
-
-    if (valor.length > 11)
-        valor = valor.slice(0, 11);
-
-    valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
-    valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
-    valor = valor.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-
-    input.value = valor;
-}
-
-// Mesmo método aparece várias vezes em vários documentos.
 function ModalDialog(titulo, texto) {
     var random = Math.random().toString().replace('.', '');
     var texto = '<div id="' + random + '" class="modal fade">                                                               ' +

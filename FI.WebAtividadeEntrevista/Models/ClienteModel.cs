@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FI.AtividadeEntrevista.DML;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace WebAtividadeEntrevista.Models
         /// CEP
         /// </summary>
         [Required]
-        public string CEP { get; set; }
+        public string CEP { get; set; } 
 
         /// <summary>
         /// Cidade
@@ -71,7 +72,8 @@ namespace WebAtividadeEntrevista.Models
         /// CPF
         /// </summary>
         [Required]
-        //[RegularExpression(@"^\d{11}$", ErrorMessage = "CPF inválido")]
         public string CPF { get; set; }
+
+        public List<BeneficiarioModel> beneficiarios;
     }    
 }

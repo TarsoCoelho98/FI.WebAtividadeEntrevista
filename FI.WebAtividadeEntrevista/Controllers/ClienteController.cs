@@ -1,12 +1,10 @@
 ﻿using FI.AtividadeEntrevista.BLL;
-using WebAtividadeEntrevista.Models;
+using FI.AtividadeEntrevista.DML;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using FI.AtividadeEntrevista.DML;
-using FI.AtividadeEntrevista.BLL.Enums;
+using WebAtividadeEntrevista.Models;
 
 namespace WebAtividadeEntrevista.Controllers
 {
@@ -17,9 +15,9 @@ namespace WebAtividadeEntrevista.Controllers
             return View();
         }
 
-
         public ActionResult Incluir()
         {
+            ViewBag.ModoEdicao = false;
             return View();
         }
 
@@ -102,12 +100,12 @@ namespace WebAtividadeEntrevista.Controllers
             }
 
             return Json(resultado.Mensagem);
-
         }
 
         [HttpGet]
         public ActionResult Alterar(long id)
         {
+            ViewBag.ModoEdicao = true;
             BoCliente bo = new BoCliente();
             Cliente cliente = bo.Consultar(id);
             ClienteModel model = null;
