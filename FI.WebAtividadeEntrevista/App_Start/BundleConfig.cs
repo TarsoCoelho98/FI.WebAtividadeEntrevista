@@ -28,6 +28,10 @@ namespace FI.WebAtividadeEntrevista
                       "~/Scripts/jtable/jquery.jtable.min.js",
                       "~/Scripts/jtable/localization/jquery.jtable.pt-BR.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/clientesCommon").Include(
+                      "~/Scripts/Clientes/FI.Clientes.Common.js"));
+
+
             bundles.Add(new ScriptBundle("~/bundles/clientes").Include(
                       "~/Scripts/Clientes/FI.Clientes.js"));
 
