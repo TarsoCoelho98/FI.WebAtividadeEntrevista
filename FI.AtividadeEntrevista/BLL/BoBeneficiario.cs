@@ -3,29 +3,25 @@ using FI.AtividadeEntrevista.BLL.Resultados;
 using FI.AtividadeEntrevista.BLL.Util;
 using FI.AtividadeEntrevista.DML;
 using System;
+using System.Collections.Generic;
 
 namespace FI.AtividadeEntrevista.BLL
 {
     public class BoBeneficiario
     {
         /// <summary>
-        /// Inclui um novo beneficiário
+        /// Incluir novo beneficiário
         /// </summary>
-        /// <param name="beneficiario">Objeto beneficiário</param>
+        /// <param name="beneficiario"></param>
+        /// <returns></returns>
         public ResultadoCliente Incluir(Beneficiario beneficiario)
-        {
-            if (!ValidadorCpf.CpfValido(beneficiario.CPF))
-                return new ResultadoCliente(TipoResultado.CpfInvalido, "Erro ao salvar, forneça um CPF válido.", false);
-            else if (VerificarDuplicidadeCpfPorCliente(beneficiario.CPF, beneficiario.Id, beneficiario.IdCliente))
-                return new ResultadoCliente(TipoResultado.CpfDuplicado, "Erro ao salvar, este CPF já existe vinculado a esse cliente.", false);
-
+        {            
             try
             {
                 DAL.DaoBeneficiario dao = new DAL.DaoBeneficiario();
-
                 return dao.Incluir(beneficiario) != 0 
                     ? new ResultadoCliente(TipoResultado.Sucesso,"Beneficiário incluído com sucesso.",true)
-                    : new ResultadoCliente(TipoResultado.ErroGenerico,"Falha ao incluir beneficiário.",false);
+                    : new ResultadoCliente(TipoResultado.ErroGenerico,$"Falha ao incluir o beneficiário {beneficiario.Nome}.",false);
             }
             catch (Exception e)
             {
@@ -33,72 +29,41 @@ namespace FI.AtividadeEntrevista.BLL
             }
         }
 
-
         /// <summary>
-        /// Altera um beneficiário
+        /// Consultar por cliente
         /// </summary>
-        /// <param name="beneficiario">Objeto beneficiário</param>
-        public ResultadoCliente Alterar(Beneficiario beneficiario)
-        {
-            if (!ValidadorCpf.CpfValido(beneficiario.CPF))
-                return new ResultadoCliente(
-                    TipoResultado.CpfInvalido,
-                    "Erro ao salvar, forneça um CPF válido.",
-                    false
-                );
-
-            try
-            {
-                DAL.DaoBeneficiario dao = new DAL.DaoBeneficiario();
-                dao.Alterar(beneficiario);
-
-                return new ResultadoCliente(
-                    TipoResultado.Sucesso,
-                    "Beneficiário alterado com sucesso.",
-                    true
-                );
-            }
-            catch (Exception e)
-            {
-                return new ResultadoCliente(
-                    TipoResultado.Excecao,
-                    e.Message,
-                    false
-                );
-            }
-        }
-
-        /// <summary>
-        /// Excluir beneficiário
-        /// </summary>
-        /// <param name="id">Id do beneficiário</param>
-        public ResultadoCliente Excluir(long id)
-        {
-            try
-            {
-                DAL.DaoBeneficiario dao = new DAL.DaoBeneficiario();
-                dao.Excluir(id);
-
-                return new ResultadoCliente(TipoResultado.Sucesso, "Beneficiário excluído com sucesso.", true);
-            }
-            catch (Exception e)
-            {
-                return new ResultadoCliente(TipoResultado.Excecao, e.Message, false);
-            }
-        }
-
-
-        /// <summary>
-        /// VerificaExistencia
-        /// </summary>
-        /// <param name="CPF"></param>
-        /// <param name="idBeneficiario"></param>
         /// <param name="idCliente"></param>
         /// <returns></returns>
-        public bool VerificarDuplicidadeCpfPorCliente(string CPF, long idBeneficiario, long idCliente)
+        public List<DML.Beneficiario> ConsultarPorCliente(long idCliente)
         {
-            DAL.DaoBeneficiario cli = new DAL.DaoBeneficiario();
-            return cli.VerificarDuplicidadeCpfPorCliente(CPF, idBeneficiario, idCliente);
+            DAL.DaoBeneficiario dao = new DAL.DaoBeneficiario();
+            return dao.ConsultarPorCliente(idCliente);
+        }
+
+        /// <summary>
+        /// Remover por cliente
+        /// </summary>
+        /// <param name="idCliente"></param>
+        internal void RemoverPorIdCliente(long idCliente)
+        {
+            DAL.DaoBeneficiario dao = new DAL.DaoBeneficiario();
+            dao.RemoverPorIdCliente(idCliente);
+        }
+
+        public bool ExisteDuplicidade(List<Beneficiario> beneficiarios)
+        {
+            var cpfs = new HashSet<string>();
+
+            foreach (var item in beneficiarios)
+            {
+                if (string.IsNullOrWhiteSpace(item.CPF))
+                    continue;
+
+                if (!cpfs.Add(item.CPF))
+                    return true;
+            }
+
+            return false;
         }
     }
 }

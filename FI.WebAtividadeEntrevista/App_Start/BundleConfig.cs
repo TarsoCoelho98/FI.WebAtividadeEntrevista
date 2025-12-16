@@ -1,5 +1,4 @@
-﻿using System.Web;
-using System.Web.Optimization;
+﻿using System.Web.Optimization;
 
 namespace FI.WebAtividadeEntrevista
 {
@@ -37,9 +36,6 @@ namespace FI.WebAtividadeEntrevista
 
             bundles.Add(new ScriptBundle("~/bundles/altClientes").Include(
                       "~/Scripts/Clientes/FI.AltClientes.js"));
-
-            bundles.Add(new ScriptBundle("~/bundles/beneficiarios").Include(
-                   "~/Scripts/Beneficiarios/FI.Beneficiarios.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",

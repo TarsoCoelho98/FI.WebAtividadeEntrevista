@@ -1,18 +1,36 @@
 ﻿var beneficiarios = [];
 
 $(document).ready(function () {
-    //beneficiarios = [];
-
     $('#btnBeneficiarios').on('click', function () {
         $('#modalBeneficiarios').modal('show');
     });
 
-    $(document).on('click', '#btnIncluirBeneficiario', function () {
-        var cpf = $('#CpfBeneficiario').val();
+    $('#btnCancelar').on('click', function () {
+        cancelarModoEdicao();
+    });
+
+    $('#btnAtualizarBeneficiario').on('click', function () {
+        editarBeneficiario();
+    });
+
+
+    $('#CpfBeneficiario, #NomeBeneficiario').on('input', function () {
+        validarBeneficiario();
+    });
+
+    $('#modalBeneficiarios').on('hidden.bs.modal', function () {
+        limparCamposBeneficiario();
+        cancelarModoEdicao(); 
+    });
+
+    $(document).on('click', '#btnIncluirBeneficiario', function (e) {
+        e.preventDefault();
+        var cpf = $('#CpfBeneficiario').val().replace(/\./g, '').replace(/-/g, '');
+
         var nome = $('#NomeBeneficiario').val();
         var idCliente = 0;
 
-        if (obj) {
+        if (typeof obj !== 'undefined' && obj !== null) {
             idCliente = obj.Id;
         }
 
@@ -25,24 +43,28 @@ $(document).ready(function () {
         beneficiarios.push(beneficiario);
         $('#CpfBeneficiario').val('');
         $('#NomeBeneficiario').val('');
+
+        atualizarGridBeneficiarios();
     });
 
     $('#formCadastro').submit(function (e) {
         e.preventDefault();
+        normalizarCpfBeneficiarios();
         $.ajax({
             url: urlPost,
             method: "POST",
             data: {
                 "NOME": $(this).find("#Nome").val(),
                 "CEP": $(this).find("#CEP").val(),
-                "CPF": $(this).find("#CPF").val(),
+                "CPF": $(this).find("#CPF").val().replace(/\./g, '').replace(/-/g, ''),
                 "Email": $(this).find("#Email").val(),
                 "Sobrenome": $(this).find("#Sobrenome").val(),
                 "Nacionalidade": $(this).find("#Nacionalidade").val(),
                 "Estado": $(this).find("#Estado").val(),
                 "Cidade": $(this).find("#Cidade").val(),
                 "Logradouro": $(this).find("#Logradouro").val(),
-                "Telefone": $(this).find("#Telefone").val()
+                "Telefone": $(this).find("#Telefone").val(),
+                "Beneficiarios": beneficiarios
             },
             error:
                 function (r) {
@@ -55,26 +77,111 @@ $(document).ready(function () {
                 function (r) {
                     ModalDialog("Sucesso!", r)
                     $("#formCadastro")[0].reset();
+                    beneficiarios = [];
+                    atualizarGridBeneficiarios();
                 }
         });
     })
 
 })
 
-function aplicarMascaraCpf(input) {
-    let valor = input.value.replace(/\D/g, '');
+function normalizarCpfBeneficiarios() {
+    if (!beneficiarios || beneficiarios.length === 0) return;
 
-    if (valor.length > 11)
-        valor = valor.slice(0, 11);
-
-    valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
-    valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
-    valor = valor.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-
-    input.value = valor;
+    beneficiarios.forEach(function (b) {
+        if (b.CPF) {
+            b.CPF = b.CPF.replace(/\./g, '').replace(/-/g, '');
+        }
+    });
 }
 
-// Mesmo método aparece várias vezes em vários documentos.
+function limparCamposBeneficiario() {
+    $('#CpfBeneficiario').val('');
+    $('#NomeBeneficiario').val('');
+    $('#btnIncluirBeneficiario').prop('disabled', true);
+}
+
+function removerBeneficiario(index) {
+    beneficiarios.splice(index, 1);
+    atualizarGridBeneficiarios();
+}
+
+function validarBeneficiario() {
+    const cpf = $('#CpfBeneficiario').val().trim();
+    const nome = $('#NomeBeneficiario').val().trim();
+
+    const cpfValido = cpf.length === 14;
+    const nomeValido = nome.length > 0;
+
+    $('#btnAtualizarBeneficiario').prop('disabled', !(cpfValido && nomeValido)); 
+    $('#btnIncluirBeneficiario').prop('disabled', !(cpfValido && nomeValido));
+}
+
+
+function atualizarGridBeneficiarios() {
+
+    var table = $('#gridBeneficiarios');
+    var tbody = table.find('tbody');
+
+    tbody.empty();
+
+    if (!beneficiarios || beneficiarios.length === 0) {
+        table.hide();
+        return;
+    }
+
+    table.show();
+
+    beneficiarios.forEach(function (b, index) {
+
+        var cpfFormatado = formatarCpf(b.CPF);
+
+        tbody.append(
+            '<tr data-index="' + index + '">' +
+            '<td class="text-center">' +
+            cpfFormatado +
+            '<input type="hidden" class="beneficiario-id" value="' + (b.Id || 0) + '" />' +
+            '</td>' +
+            '<td class="text-center">' + b.Nome + '</td>' +
+            '<td class="text-center text-nowrap">' +
+            '<div class="btn-group" role="group">' +
+            '<button type="button" class="btn btn-primary btn-sm mr-2" ' +
+            'onclick="abrirModoEdicao(' + index + ')">Alterar</button>' +
+            '<button type="button" class="btn btn-danger btn-sm" ' +
+            'onclick="removerBeneficiario(' + index + ')">Excluir</button>' +
+            '</div>' +
+            '</td>' +
+            '</tr>'
+        );
+    });
+}
+
+function abrirModoEdicao(index) {
+    indexEdicao = index;
+    var beneficiarioEdicao = beneficiarios[indexEdicao];
+    limparCamposBeneficiario();
+    $('#CpfBeneficiario').val(formatarCpf(beneficiarioEdicao.CPF));
+    $('#NomeBeneficiario').val(beneficiarioEdicao.Nome);
+    $('#btnIncluirBeneficiario').hide();
+    $('#grupoEdicao').show();
+    $('#gridBeneficiarios').addClass('table-disabled');
+}
+
+function editarBeneficiario() {
+    beneficiarios[indexEdicao].CPF = $('#CpfBeneficiario').val();
+    beneficiarios[indexEdicao].Nome = $('#NomeBeneficiario').val();
+    cancelarModoEdicao();
+    atualizarGridBeneficiarios();
+}
+
+function cancelarModoEdicao() {
+    indexEdicao = null;
+    limparCamposBeneficiario();
+    $('#btnIncluirBeneficiario').show();
+    $('#grupoEdicao').hide();
+    $('#gridBeneficiarios').removeClass('table-disabled');
+}
+
 function ModalDialog(titulo, texto) {
     var random = Math.random().toString().replace('.', '');
     var texto = '<div id="' + random + '" class="modal fade">                                                               ' +
@@ -98,3 +205,27 @@ function ModalDialog(titulo, texto) {
     $('body').append(texto);
     $('#' + random).modal('show');
 }
+
+function formatarCpf(cpf) {
+    if (!cpf) return '';
+
+    cpf = cpf.replace(/\D/g, '').padStart(11, '0');
+
+    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/,
+        '$1.$2.$3-$4');
+}
+
+
+function aplicarMascaraCpf(input) {
+    let valor = input.value.replace(/\D/g, '');
+
+    if (valor.length > 11)
+        valor = valor.slice(0, 11);
+
+    valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
+    valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
+    valor = valor.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+
+    input.value = valor;
+}
+

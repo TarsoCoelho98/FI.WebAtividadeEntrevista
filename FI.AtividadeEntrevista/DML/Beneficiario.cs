@@ -1,5 +1,8 @@
 ﻿namespace FI.AtividadeEntrevista.DML
 {
+    /// <summary>
+    /// Classe de beneficiário que representa o registo na tabela Beneficiarios do Banco de Dados
+    /// </summary>
     public class Beneficiario
     {
         public long Id { get; set; }

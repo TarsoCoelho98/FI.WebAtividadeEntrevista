@@ -2,6 +2,9 @@
 
 namespace WebAtividadeEntrevista.Models
 {
+    /// <summary>
+    /// Classe de Modelo de Beneficiário
+    /// </summary>
     public class BeneficiarioModel
     {
         public long Id { get; set; }

@@ -1,4 +1,18 @@
-﻿<div class="modal-header position-relative">
+﻿@section scripts{
+    <script>
+        var urlBeneficiariosPorCliente = '@Url.Action("BeneficiariosPorCliente", "Beneficiario", new { area = "" })';
+    </script>
+}
+
+<style>
+    .table-disabled {
+        pointer-events: none;
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+</style>
+
+<div class="modal-header position-relative">
     <h5 class="modal-title">Beneficiários</h5>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position:absolute; top:18px; right:15px;">
         <span aria-hidden="true">&times;</span>
@@ -6,25 +20,17 @@
 </div>
 
 <div class="modal-body" id="formCadastroBeneficiario">
-    <!-- FORM VISUAL (SEM <form>) -->
     <div class="row mb-4">
-
         <div class="col-md-5">
             <div class="form-group">
                 <label for="CpfBeneficiario">CPF:</label>
-                <input type="text"
-                       class="form-control"
-                       id="CpfBeneficiario"
-                       placeholder="Ex.: 010.011.111-00"
-                       maxlength="14"
-                       oninput="aplicarMascaraCpf(this)">
+                <input required type="text" class="form-control" id="CpfBeneficiario" placeholder="Ex.: 010.011.111-00" maxlength="14" oninput="aplicarMascaraCpf(this)">
             </div>
         </div>
-
         <div class="col-md-5">
             <div class="form-group">
                 <label for="NomeBeneficiario">Nome:</label>
-                <input type="text"
+                <input required type="text"
                        class="form-control"
                        id="NomeBeneficiario"
                        placeholder="Ex.: Maria"
@@ -35,51 +41,26 @@
         <div class="col-md-2">
             <div class="form-group">
                 <label>&nbsp;</label>
-                <button type="button"
-                        id="btnIncluirBeneficiario"
-                        class="btn btn-success">
-                    Incluir
-                </button>
+                <!-- Modo inclusão -->
+                <button type="button" id="btnIncluirBeneficiario" class="btn btn-success btn-block" disabled>Incluir</button>
+                <!-- Modo edição -->
+                <div id="grupoEdicao" style="display:none">
+                    <button type="button" id="btnAtualizarBeneficiario" class="btn btn-primary btn-block mt-2">Alterar</button>
+                    <button type="button" id="btnCancelar" class="btn btn-danger btn-block mt-1">Cancelar</button>
+                </div>
             </div>
         </div>
 
     </div>
-
-    <!-- TABELA -->
-    <table class="table table-bordered">
+    <table id="gridBeneficiarios" class="table table-bordered" style="display:none">
         <thead>
             <tr>
-                <th style="width: 25%">CPF</th>
-                <th style="width: 45%">Nome</th>
-                <th style="width: 30%">Ações</th>
+                <th class="text-center">CPF</th>
+                <th class="text-center">Nome</th>
+                <th class="text-center">Ações</th>
             </tr>
         </thead>
-        <tbody>
-            <tr>
-                <td>000.000.001-91</td>
-                <td>Beneficiário João</td>
-                <td>
-                    <button type="button" class="btn btn-primary btn-sm mr-2">
-                        Alterar
-                    </button>
-                    <button type="button" class="btn btn-primary btn-sm">
-                        Excluir
-                    </button>
-                </td>
-            </tr>
-            <tr>
-                <td>000.000.002-72</td>
-                <td>Beneficiário José</td>
-                <td>
-                    <button type="button" class="btn btn-primary btn-sm mr-2">
-                        Alterar
-                    </button>
-                    <button type="button" class="btn btn-primary btn-sm">
-                        Excluir
-                    </button>
-                </td>
-            </tr>
-        </tbody>
+        <tbody></tbody>
     </table>
 </div>
 

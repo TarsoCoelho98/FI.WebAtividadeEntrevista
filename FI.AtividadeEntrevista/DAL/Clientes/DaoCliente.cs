@@ -14,10 +14,9 @@ namespace FI.AtividadeEntrevista.DAL
         /// Inclui um novo cliente
         /// </summary>
         /// <param name="cliente">Objeto de cliente</param>
-        internal long Incluir(DML.Cliente cliente)
+        internal long Incluir(Cliente cliente)
         {
             List<System.Data.SqlClient.SqlParameter> parametros = new List<System.Data.SqlClient.SqlParameter>();
-
             parametros.Add(new System.Data.SqlClient.SqlParameter("Nome", cliente.Nome));
             parametros.Add(new System.Data.SqlClient.SqlParameter("CPF", cliente.CPF));
             parametros.Add(new System.Data.SqlClient.SqlParameter("Sobrenome", cliente.Sobrenome));
@@ -36,34 +35,46 @@ namespace FI.AtividadeEntrevista.DAL
             return ret;
         }
 
+
+
         /// <summary>
-        /// Inclui um novo cliente
+        /// Consulta cliente por id
         /// </summary>
-        /// <param name="cliente">Objeto de cliente</param>
-        internal DML.Cliente Consultar(long Id)
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        internal Cliente Consultar(long Id)
         {
             List<System.Data.SqlClient.SqlParameter> parametros = new List<System.Data.SqlClient.SqlParameter>();
-
             parametros.Add(new System.Data.SqlClient.SqlParameter("Id", Id));
-
             DataSet ds = base.Consultar("FI_SP_ConsCliente", parametros);
-            List<DML.Cliente> cli = Converter(ds);
-
+            List<Cliente> cli = Converter(ds);
             return cli.FirstOrDefault();
         }
 
-        internal bool VerificarDuplicidadeCpf(string CPF, long id)
+        /// <summary>
+        /// Verifica duplicidade cpf
+        /// </summary>
+        /// <param name="CPF"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        internal bool ExisteDuplicidade(string CPF, long id)
         {
             List<System.Data.SqlClient.SqlParameter> parametros = new List<System.Data.SqlClient.SqlParameter>();
-
             parametros.Add(new System.Data.SqlClient.SqlParameter("CPF", CPF));
             parametros.Add(new System.Data.SqlClient.SqlParameter("@IdCliente", id));
-
             DataSet ds = base.Consultar("FI_SP_VerificaCliente", parametros);
-
             return ds.Tables[0].Rows.Count > 0;
         }
 
+        /// <summary>
+        /// Pesquisa paginada de clientes
+        /// </summary>
+        /// <param name="iniciarEm"></param>
+        /// <param name="quantidade"></param>
+        /// <param name="campoOrdenacao"></param>
+        /// <param name="crescente"></param>
+        /// <param name="qtd"></param>
+        /// <returns></returns>
         internal List<Cliente> Pesquisa(int iniciarEm, int quantidade, string campoOrdenacao, bool crescente, out int qtd)
         {
             List<System.Data.SqlClient.SqlParameter> parametros = new List<System.Data.SqlClient.SqlParameter>();
@@ -89,7 +100,7 @@ namespace FI.AtividadeEntrevista.DAL
         /// <summary>
         /// Lista todos os clientes
         /// </summary>
-        internal List<DML.Cliente> Listar()
+        internal List<Cliente> Listar()
         {
             List<System.Data.SqlClient.SqlParameter> parametros = new List<System.Data.SqlClient.SqlParameter>();
 
@@ -105,7 +116,7 @@ namespace FI.AtividadeEntrevista.DAL
         /// Inclui um novo cliente
         /// </summary>
         /// <param name="cliente">Objeto de cliente</param>
-        internal void Alterar(DML.Cliente cliente)
+        internal void Alterar(Cliente cliente)
         {
             List<System.Data.SqlClient.SqlParameter> parametros = new List<System.Data.SqlClient.SqlParameter>();
 
@@ -138,14 +149,14 @@ namespace FI.AtividadeEntrevista.DAL
             base.Executar("FI_SP_DelCliente", parametros);
         }
 
-        private List<DML.Cliente> Converter(DataSet ds)
+        private List<Cliente> Converter(DataSet ds)
         {
-            List<DML.Cliente> lista = new List<DML.Cliente>();
+            List<Cliente> lista = new List<Cliente>();
             if (ds != null && ds.Tables != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
             {
                 foreach (DataRow row in ds.Tables[0].Rows)
                 {
-                    DML.Cliente cli = new DML.Cliente();
+                    Cliente cli = new Cliente();
                     cli.Id = row.Field<long>("Id");
                     cli.CEP = row.Field<string>("CEP");
                     cli.CPF = row.Field<string>("CPF");

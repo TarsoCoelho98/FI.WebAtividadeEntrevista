@@ -17,7 +17,6 @@ namespace WebAtividadeEntrevista.Controllers
 
         public ActionResult Incluir()
         {
-            ViewBag.ModoEdicao = false;
             return View();
         }
 
@@ -25,8 +24,6 @@ namespace WebAtividadeEntrevista.Controllers
         public JsonResult Incluir(ClienteModel model)
         {
             BoCliente bo = new BoCliente();
-            // lógica pode ser passado pro próprio .js
-            model.CPF = model.CPF.Replace(".", string.Empty).Replace("-", string.Empty).Trim();
 
             if (!this.ModelState.IsValid)
             {
@@ -49,7 +46,10 @@ namespace WebAtividadeEntrevista.Controllers
                 Nacionalidade = model.Nacionalidade,
                 Nome = model.Nome,
                 Sobrenome = model.Sobrenome,
-                Telefone = model.Telefone
+                Telefone = model.Telefone,
+                Beneficiarios = model.Beneficiarios != null && model.Beneficiarios.Any() 
+                    ? ConverterBeneficiarios(model.Beneficiarios) 
+                    : new List<Beneficiario>()
             });
 
             if (!resultado.Sucesso)
@@ -61,12 +61,30 @@ namespace WebAtividadeEntrevista.Controllers
             return Json(resultado.Mensagem);
         }
 
+        public List<Beneficiario> ConverterBeneficiarios(List<BeneficiarioModel> beneficiarioModels)
+        {
+            List<Beneficiario> beneficiarios = new List<Beneficiario>();
+
+            foreach (var item in beneficiarioModels)
+            {
+                Beneficiario beneficiario = new Beneficiario()
+                {
+                    Id = item.Id,
+                    CPF = item.CPF,
+                    Nome = item.Nome,
+                    IdCliente = item.IdCliente,
+                };
+
+                beneficiarios.Add(beneficiario);
+            }
+
+            return beneficiarios;
+        }
+
         [HttpPost]
         public JsonResult Alterar(ClienteModel model)
         {
             BoCliente bo = new BoCliente();
-            // lógica pode ser passado pro próprio .js
-            model.CPF = model.CPF.Replace(".", string.Empty).Replace("-", string.Empty).Trim();
 
             if (!this.ModelState.IsValid)
             {
@@ -90,7 +108,10 @@ namespace WebAtividadeEntrevista.Controllers
                 Nacionalidade = model.Nacionalidade,
                 Nome = model.Nome,
                 Sobrenome = model.Sobrenome,
-                Telefone = model.Telefone
+                Telefone = model.Telefone,
+                Beneficiarios = model.Beneficiarios != null && model.Beneficiarios.Any()
+                    ? ConverterBeneficiarios(model.Beneficiarios)
+                    : new List<Beneficiario>()
             });
 
             if (!resultado.Sucesso)
@@ -105,7 +126,6 @@ namespace WebAtividadeEntrevista.Controllers
         [HttpGet]
         public ActionResult Alterar(long id)
         {
-            ViewBag.ModoEdicao = true;
             BoCliente bo = new BoCliente();
             Cliente cliente = bo.Consultar(id);
             ClienteModel model = null;

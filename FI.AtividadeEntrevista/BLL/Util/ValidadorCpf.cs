@@ -1,6 +1,6 @@
 ﻿namespace FI.AtividadeEntrevista.BLL.Util
 {
-    internal static class ValidadorCpf
+    public static class ValidadorCpf
     {
         public static bool CpfValido(string cpf)
         {
@@ -12,7 +12,6 @@
             if (cpf.Length != 11)
                 return false;
 
-            // Elimina CPFs com todos os dígitos iguais
             if (new string(cpf[0], 11) == cpf)
                 return false;
 
@@ -39,7 +38,6 @@
             resto = resto < 2 ? 0 : 11 - resto;
 
             digito += resto.ToString();
-
             return cpf.EndsWith(digito);
         }
     }
